@@ -1,11 +1,16 @@
-#
 # Defines environment variables.
 #
 # Authors:
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
+#   Eddie Antonio Santos <easantos@ualberta.ca>
 #
 
 # Ensure that a non-login, non-interactive shell has a defined environment.
 if [[ "$SHLVL" -eq 1 && ! -o LOGIN && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprofile"
+fi
+
+# Source my personal environment variables, if they exist.
+if [[ -o LOGIN && -s "${ZDOTDIR:-$HOME}/.env" ]]; then
+  source "${ZDOTDIR:-$HOME}/.env"
 fi
