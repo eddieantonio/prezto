@@ -31,6 +31,7 @@
 #  see: https://jonasjacek.github.io/colors/
 #
 #   74 - SteelBlue
+#  116 - DarkSlateGrey
 #  120 - LightGreen
 #  124 - Red3
 
@@ -58,14 +59,15 @@ prompt_pure_check_cmd_exec_time() {
     (( elapsed = EPOCHSECONDS - ${prompt_pure_cmd_timestamp:-$EPOCHSECONDS} ))
     prompt_pure_cmd_exec_time=
     (( elapsed > ${PURE_CMD_MAX_EXEC_TIME:=5} )) && {
-    prompt_pure_human_time_to_var $elapsed "prompt_pure_cmd_exec_time"
-}
+        prompt_pure_human_time_to_var $elapsed "prompt_pure_cmd_exec_time"
+    }
 }
 
 # In iTerm2, clears the scrollback buffer on ctrl+L
 prompt_eddie_clear_screen() {
     local escape_sequence
 
+    # When in iTerm2...
     # https://www.iterm2.com/documentation-escape-codes.html
     if ((${+ITERM_SESSION_ID})); then
         escape_sequence='\e]1337;ClearScrollback\007'
@@ -123,11 +125,12 @@ prompt_pure_set_title() {
 # "Executed just after a command has been read and is about to be executed."
 # http://zsh.sourceforge.net/Doc/Release/Functions.html
 prompt_pure_preexec() {
+    local abbrev_command="$2"
     # Keep track of how long the last command has been running for.
     prompt_pure_cmd_timestamp=$EPOCHSECONDS
 
-    # shows the current dir and executed command in the title while a process is active
-    prompt_pure_set_title 'ignore-escape' "$PWD:t: $2"
+    # Shows the current dir and executed command in the title while a process is active
+    prompt_pure_set_title 'ignore-escape' "${PWD} ❯ $abbrev_command"
 }
 
 # string length ignoring ansi escapes
@@ -312,7 +315,7 @@ prompt_eddie_lprompt() {
     local pchar=${1:-❯}
 
     # ~         | current working dir, with ~ substitution
-    print -n '%F{74}%1~%f '
+    print -n '%F{116}%1~%f '
 
     # 127       | sets the background colour depending on previous return
     #           | code. Displays the return code if non-zero.
