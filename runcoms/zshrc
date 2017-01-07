@@ -5,6 +5,14 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
+# Options:
+# extendedglob
+# dotglob
+# no_notify
+
+# noclobber
+# nobeep
+
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
@@ -19,3 +27,69 @@ fi
 if [ -f "$HOME/.aliases" ]; then
   source "$HOME/.aliases"
 fi
+
+# TODO: source-this-extra?
+# extra machine-specific stuff...
+if [ -e ~/.source-this-extra.sh ] ; then
+    source ~/.source-this-extra.sh
+fi
+
+
+##
+# Autojump
+##
+# Lazy load: https://kev.inburke.com/kevin/profiling-zsh-startup-time/
+function j {
+  (( $+commands[brew] )) && {
+    local pfx=$(brew --prefix)
+    [[ -f "$pfx/etc/autojump.sh" ]] && . "$pfx/etc/autojump.sh"
+    j "$@"
+  }
+}
+
+##
+# Pyenv
+##
+# TODO: Add a path shim for this.
+# Lazy load: https://kev.inburke.com/kevin/profiling-zsh-startup-time/
+pyenv() {
+  #Essentially on the first invocation, these functions source the actual
+  #definition and then immediately call it with the arguments passed in.
+  eval "$( command pyenv init - )"
+  # eval "$(pyenv virtualenv-init -)"
+  pyenv "$@"
+}
+
+##
+# NVM
+##
+# TODO: Add a path shim for this... If I can?
+nvm() {
+  export NVM_DIR="$HOME/.nvm"
+  source "/usr/local/opt/nvm/nvm.sh"
+  nvm "$@"
+}
+
+##
+# Travis-CI Gem
+##
+# Lazy-load it.
+travis() {
+  if [ -f "$HOME/.travis/travis.sh" ]; then
+    source "$HOME/.travis/travis.sh"
+  fi
+
+  # Delete this function, and call the original Travis-CI function:
+  unset -f travis
+  travis "$@"
+}
+
+# TODO: make this better.
+# AWESOME ZSH IGNORED PATTERNS!
+# zstyle ':completion::complete:vim:*' ignored-patterns \
+#     '*.o' '*.pyc'
+
+# iTerm2 shell integration...
+test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
+
+# TODO: Add fancy ctrl+z

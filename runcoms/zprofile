@@ -47,6 +47,14 @@ path=(
   $path
 )
 
+# Prepend Pyenv's shims, if it exists!
+if [ -d "$HOME/.pyenv/shims" ] ; then
+  path=(
+    "$HOME/.pyenv/shims"
+    $path
+  )
+fi
+
 #
 # Less
 #
