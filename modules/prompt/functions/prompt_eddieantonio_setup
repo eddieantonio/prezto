@@ -26,7 +26,7 @@
 # \e[K  => clears everything after the cursor on the current line
 # \e[2K => clear everything on the current line
 
-# Colors
+# An assortment of colors
 #
 #  see: https://jonasjacek.github.io/colors/
 #
@@ -34,6 +34,11 @@
 #  116 - DarkSlateGrey
 #  120 - LightGreen
 #  124 - Red3
+
+local directory_colour=blue
+local success_colour=74
+local error_colour=124
+local merge_conflict_color=200
 
 # turns seconds into human readable time
 # 165392 => 1d 21h 56m 32s
@@ -315,11 +320,17 @@ prompt_eddie_lprompt() {
     local pchar=${1:-❯}
 
     # ~         | current working dir, with ~ substitution
-    print -n '%F{116}%1~%f '
+    print -n '%F{'$directory_colour'}%1~%f'
+
+    # ⚙        | Add a symbol when there's at least one background job.
+    print -n '%(1j.%B⚙%b.)'
+
+    # TODO: virtualenv indicator, maybe with ⚕ or 🐍
 
     # 127       | sets the background colour depending on previous return
     #           | code. Displays the return code if non-zero.
-    print -n '%(?.%F{120}.%F{124}%?)'
+    print -n '%(?.%F{'$success_colour'}'
+    print -n '. %F{'$error_colour'}%?)'
 
     # ❯❯        | outputs extra prompts, if in subshells (up to 3 levels).
     print -n "%(2L.$pchar.)%(3L.$pchar.)"
