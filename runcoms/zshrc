@@ -92,4 +92,26 @@ travis() {
 # iTerm2 shell integration...
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 
-# TODO: Add fancy ctrl+z
+##
+# Fancy Ctrl-Z
+#
+# When pressing Ctrl+Z on an empty buffer, fg's the suspended process.
+# Use case: ctrl+z out of Vim to run some commands; ctrl+z to quickly jump
+# back into vim.
+#
+# Adapted from:
+# http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
+##
+fancy-ctrl-z () {
+  local bgjobs="$(jobs -sp | wc -l)"
+
+  # Check if there is any contents in the buffer.
+  # AND if there are any suspended jobs.
+  if (( $#BUFFER == 0 && $bgjobs > 0 )); then
+    # Type `fg`<CR>
+    BUFFER="fg"
+    zle accept-line
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
