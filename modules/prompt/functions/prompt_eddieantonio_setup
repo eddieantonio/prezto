@@ -34,6 +34,7 @@
 #  116 - DarkSlateGrey
 #  120 - LightGreen
 #  124 - Red3
+#  221 - LightGoldenrod2
 
 
 # turns seconds into human readable time
@@ -127,11 +128,11 @@ prompt_pure_set_title() {
 # "Executed just after a command has been read and is about to be executed."
 # http://zsh.sourceforge.net/Doc/Release/Functions.html
 prompt_eddieantonio_preexec() {
-    typeset -g prompt_pure_cmd_timestamp
+    #typeset -g prompt_pure_cmd_timestamp
     local abbrev_command="$2"
 
     # Keep track of how long the last command has been running for.
-    prompt_pure_cmd_timestamp=$EPOCHSECONDS
+    #prompt_pure_cmd_timestamp=$EPOCHSECONDS
 
     # Shows the current dir and executed command in the title while a process is active
     prompt_pure_set_title 'ignore-escape' "${PWD} ❯ $abbrev_command"
@@ -220,14 +221,14 @@ prompt_pure_preprompt_render() {
 }
 
 prompt_pure_precmd() {
-    typeset -g prompt_pure_cmd_timestamp
+    #typeset -g prompt_pure_cmd_timestamp
 
     # check exec time and store it in a variable
-    prompt_pure_check_cmd_exec_time
+    #prompt_pure_check_cmd_exec_time
 
     # by making sure that prompt_pure_cmd_timestamp is defined here the async functions are prevented from interfering
     # with the initial preprompt rendering
-    prompt_pure_cmd_timestamp=
+    #prompt_pure_cmd_timestamp=
 
     # check for git arrows
     #prompt_pure_check_git_arrows
@@ -245,6 +246,15 @@ prompt_pure_precmd() {
     unset prompt_pure_cmd_timestamp
 }
 
+prompt_eddieantonio_precmd() {
+    # Update VCS (git) status and put it in psvar.
+    vcs_info
+    psvar[1]="$vcs_info_msg_0_"
+
+    # Set the title.
+    prompt_pure_set_title 'expand-prompt' '%~'
+}
+
 # fastest possible way to check if repo is dirty
 prompt_pure_async_git_dirty() {
     local untracked_dirty=$1; shift
@@ -255,6 +265,7 @@ prompt_pure_async_git_dirty() {
     if [[ "$untracked_dirty" == "0" ]]; then
         command git diff --no-ext-diff --quiet --exit-code
     else
+        # Untracked are also dirty!
         test -z "$(command git status --porcelain --ignore-submodules -unormal)"
     fi
 
@@ -356,25 +367,47 @@ prompt_eddieantonio_lprompt() {
     print -n '%f '
 }
 
-prompt_eddieantonio_setup() {
-    prompt_opts=(subst percent)
-
-    zmodload zsh/datetime       # For $EPOCHSECONDS
-    zmodload zsh/zle
-    autoload -Uz vcs_info
-    autoload -Uz async && async
-
-    #add-zsh-hook precmd prompt_pure_precmd
-    add-zsh-hook preexec prompt_eddieantonio_preexec
-
+prompt_pure_setup_vcs() {
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-simple true
     # only export two msg variables from vcs_info
     zstyle ':vcs_info:*' max-exports 2
     # vcs_info_msg_0_ = ' %b' (for branch)
     # vcs_info_msg_1_ = 'x%R' git top level (%R), x-prefix prevents creation of a named path (AUTO_NAME_DIRS)
-    zstyle ':vcs_info:git*' formats ' %b' 'x%R'
-    zstyle ':vcs_info:git*' actionformats ' %b|%a' 'x%R'
+    zstyle ':vcs_info:*' formats ' %b ' 'x%R'
+    zstyle ':vcs_info:*' actionformats ' %b|%a' 'x%R'
+}
+
+prompt_eddieantonio_setup() {
+    prompt_opts=(percent subst)
+
+    zmodload zsh/datetime       # For $EPOCHSECONDS
+    zmodload zsh/zle
+    autoload -Uz vcs_info
+    #autoload -Uz async && async
+
+    add-zsh-hook precmd prompt_eddieantonio_precmd
+    #add-zsh-hook precmd prompt_pure_precmd
+    add-zsh-hook preexec prompt_eddieantonio_preexec
+
+    zstyle ':vcs_info:*' enable git
+    #zstyle ':vcs_info:*' use-simple true
+    # only export one msg variable from vcs_info
+    zstyle ':vcs_info:*' max-exports 1
+
+    # From:
+    # http://zsh.sourceforge.net/Doc/Release/User-Contributions.html#Configuration-3
+    #
+    # %b (for branch)
+
+    # Used in the default case.
+    zstyle ':vcs_info:*' formats ' %b %c%u'
+    # Used in rebases or merge conflicts
+    zstyle ':vcs_info:*' actionformats ' %b %c%u'
+
+    zstyle ':vcs_info:*' stagedstr '%F{28}●'
+    zstyle ':vcs_info:*' unstagedstr '%F{221}●'
+    zstyle ':vcs_info:*' check-for-changes true
 
     # if the user has not registered a custom zle widget for clear-screen,
     # override the builtin one so that the preprompt is displayed correctly when
@@ -387,6 +420,7 @@ prompt_eddieantonio_setup() {
 
     # Create my prompt.
     PROMPT="$(prompt_eddieantonio_lprompt ❯)"
+    RPROMPT='%F{242}%T%f${vcs_info_msg_0_}'
 }
 
 prompt_eddieantonio_setup "$@"
