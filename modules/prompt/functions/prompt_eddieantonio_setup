@@ -35,10 +35,6 @@
 #  120 - LightGreen
 #  124 - Red3
 
-local directory_colour=blue
-local success_colour=74
-local error_colour=124
-local merge_conflict_color=200
 
 # turns seconds into human readable time
 # 165392 => 1d 21h 56m 32s
@@ -130,7 +126,7 @@ prompt_pure_set_title() {
 
 # "Executed just after a command has been read and is about to be executed."
 # http://zsh.sourceforge.net/Doc/Release/Functions.html
-prompt_pure_preexec() {
+prompt_eddieantonio_preexec() {
     typeset -g prompt_pure_cmd_timestamp
     local abbrev_command="$2"
 
@@ -318,11 +314,24 @@ prompt_pure_async_callback() {
     esac
 }
 
+# TODO: other colours:
+#typeset -gA prompt_eddieantonio_colours
+#prompt_eddieantonio_colours=(
+#    directory       blue
+#    success         74
+#    error           124
+#    merge_conflict  200
+#)
+
 # Prints the format of the left prompt.
-# Use print -P "$(prompt_eddieantonio_lprompt)" to preview.
+# Use print -P "$(prompt_eddieantonio_lprompt char)" to preview.
 prompt_eddieantonio_lprompt() {
     # The prompt char. Feel free to change it.
     local pchar=${1:-❯}
+
+    local directory_colour=blue
+    local success_colour=74
+    local error_colour=124
 
     # ~         | current working dir, with ~ substitution
     print -n '%F{'$directory_colour'}%1~%f'
@@ -352,12 +361,11 @@ prompt_eddieantonio_setup() {
 
     zmodload zsh/datetime       # For $EPOCHSECONDS
     zmodload zsh/zle
-    autoload -Uz add-zsh-hook
     autoload -Uz vcs_info
     autoload -Uz async && async
 
-    add-zsh-hook precmd prompt_pure_precmd
-    add-zsh-hook preexec prompt_pure_preexec
+    #add-zsh-hook precmd prompt_pure_precmd
+    add-zsh-hook preexec prompt_eddieantonio_preexec
 
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-simple true
@@ -378,7 +386,7 @@ prompt_eddieantonio_setup() {
     # TODO: Show username@host if logged-in through SSH
 
     # Create my prompt.
-    PROMPT="$(prompt_eddieantonio_lprompt)"
+    PROMPT="$(prompt_eddieantonio_lprompt ❯)"
 }
 
 prompt_eddieantonio_setup "$@"
