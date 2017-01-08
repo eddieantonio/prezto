@@ -95,7 +95,7 @@ test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_in
 ##
 # Fancy Ctrl-Z
 #
-# When pressing Ctrl+Z on an empty buffer, fg's the suspended process.
+# When pressing Ctrl+Z on an empty buffer, `fg` the suspended process.
 # Use case: ctrl+z out of Vim to run some commands; ctrl+z to quickly jump
 # back into vim.
 #
@@ -115,3 +115,16 @@ fancy-ctrl-z () {
 }
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
+
+##
+# Options
+# See zshoptions(1)
+##
+# Allow comments even in interactive shells.
+setopt INTERACTIVE_COMMENTS
+# Print a warning message when a global parameter is created in a function
+# by an assignment.
+setopt WARN_CREATE_GLOBAL
+# On an ambiguous completion, instead of listing possibilities  or beeping,
+# insert the first match immediately.
+setopt MENU_COMPLETE
