@@ -124,7 +124,10 @@ bindkey '^Z' fancy-ctrl-z
 setopt INTERACTIVE_COMMENTS
 # Print a warning message when a global parameter is created in a function
 # by an assignment.
-setopt WARN_CREATE_GLOBAL
+setopt NO_WARN_CREATE_GLOBAL
+# Disabled, because a lot of scripts create globals!
 # On an ambiguous completion, instead of listing possibilities  or beeping,
 # insert the first match immediately.
 setopt MENU_COMPLETE
+
+# http://superuser.com/a/380667

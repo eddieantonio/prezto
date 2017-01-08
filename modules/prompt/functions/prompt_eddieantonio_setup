@@ -60,6 +60,7 @@ prompt_pure_human_time_to_var() {
 
 # stores (into prompt_pure_cmd_exec_time) the exec time of the last command if set threshold was exceeded
 prompt_pure_check_cmd_exec_time() {
+    typeset -g prompt_pure_cmd_exec_time
     integer elapsed
     (( elapsed = EPOCHSECONDS - ${prompt_pure_cmd_timestamp:-$EPOCHSECONDS} ))
     prompt_pure_cmd_exec_time=
@@ -69,7 +70,7 @@ prompt_pure_check_cmd_exec_time() {
 }
 
 # In iTerm2, clears the scrollback buffer on ctrl+L
-prompt_eddie_clear_screen() {
+prompt_eddieantonio_clear_screen() {
     local escape_sequence
 
     # When in iTerm2...
@@ -130,7 +131,9 @@ prompt_pure_set_title() {
 # "Executed just after a command has been read and is about to be executed."
 # http://zsh.sourceforge.net/Doc/Release/Functions.html
 prompt_pure_preexec() {
+    typeset -g prompt_pure_cmd_timestamp
     local abbrev_command="$2"
+
     # Keep track of how long the last command has been running for.
     prompt_pure_cmd_timestamp=$EPOCHSECONDS
 
@@ -221,6 +224,8 @@ prompt_pure_preprompt_render() {
 }
 
 prompt_pure_precmd() {
+    typeset -g prompt_pure_cmd_timestamp
+
     # check exec time and store it in a variable
     prompt_pure_check_cmd_exec_time
 
@@ -229,7 +234,7 @@ prompt_pure_precmd() {
     prompt_pure_cmd_timestamp=
 
     # check for git arrows
-    prompt_pure_check_git_arrows
+    #prompt_pure_check_git_arrows
 
     # shows the full path in the title
     prompt_pure_set_title 'expand-prompt' '%~'
@@ -238,7 +243,7 @@ prompt_pure_precmd() {
     vcs_info
 
     # preform async git dirty check and fetch
-    prompt_pure_async_tasks
+    #prompt_pure_async_tasks
 
     # remove the prompt_pure_cmd_timestamp, indicating that precmd has completed
     unset prompt_pure_cmd_timestamp
@@ -263,37 +268,37 @@ prompt_pure_async_git_dirty() {
 prompt_pure_async_tasks() {
     # initialize async worker
     ((!${prompt_pure_async_init:-0})) && {
-    async_start_worker "prompt_pure" -u -n
-    async_register_callback "prompt_pure" prompt_pure_async_callback
-    prompt_pure_async_init=1
-}
+        async_start_worker "prompt_pure" -u -n
+        async_register_callback "prompt_pure" prompt_pure_async_callback
+        prompt_pure_async_init=1
+    }
 
-# store working_tree without the "x" prefix
-local working_tree="${vcs_info_msg_1_#x}"
+    # store working_tree without the "x" prefix
+    local working_tree="${vcs_info_msg_1_#x}"
 
-# check if the working tree changed (prompt_pure_current_working_tree is prefixed by "x")
-if [[ ${prompt_pure_current_working_tree#x} != $working_tree ]]; then
-    # stop any running async jobs
-    async_flush_jobs "prompt_pure"
+    # check if the working tree changed (prompt_pure_current_working_tree is prefixed by "x")
+    if [[ ${prompt_pure_current_working_tree#x} != $working_tree ]]; then
+        # stop any running async jobs
+        async_flush_jobs "prompt_pure"
 
-    # reset git preprompt variables, switching working tree
-    unset prompt_pure_git_dirty
-    unset prompt_pure_git_last_dirty_check_timestamp
+        # reset git preprompt variables, switching working tree
+        unset prompt_pure_git_dirty
+        unset prompt_pure_git_last_dirty_check_timestamp
 
-    # set the new working tree and prefix with "x" to prevent the creation of a named path by AUTO_NAME_DIRS
-    prompt_pure_current_working_tree="x${working_tree}"
-fi
+        # set the new working tree and prefix with "x" to prevent the creation of a named path by AUTO_NAME_DIRS
+        prompt_pure_current_working_tree="x${working_tree}"
+    fi
 
-# only perform tasks inside git working tree
-[[ -n $working_tree ]] || return
+    # only perform tasks inside git working tree
+    [[ -n $working_tree ]] || return
 
-# if dirty checking is sufficiently fast, tell worker to check it again, or wait for timeout
-integer time_since_last_dirty_check=$(( EPOCHSECONDS - ${prompt_pure_git_last_dirty_check_timestamp:-0} ))
-if (( time_since_last_dirty_check > ${PURE_GIT_DELAY_DIRTY_CHECK:-1800} )); then
-    unset prompt_pure_git_last_dirty_check_timestamp
-    # check check if there is anything to pull
-    async_job "prompt_pure" prompt_pure_async_git_dirty "${PURE_GIT_UNTRACKED_DIRTY:-1}" "${working_tree}"
-fi
+    # if dirty checking is sufficiently fast, tell worker to check it again, or wait for timeout
+    integer time_since_last_dirty_check=$(( EPOCHSECONDS - ${prompt_pure_git_last_dirty_check_timestamp:-0} ))
+    if (( time_since_last_dirty_check > ${PURE_GIT_DELAY_DIRTY_CHECK:-1800} )); then
+        unset prompt_pure_git_last_dirty_check_timestamp
+        # check check if there is anything to pull
+        async_job "prompt_pure" prompt_pure_async_git_dirty "${PURE_GIT_UNTRACKED_DIRTY:-1}" "${working_tree}"
+    fi
 }
 
 prompt_pure_async_callback() {
@@ -314,8 +319,8 @@ prompt_pure_async_callback() {
 }
 
 # Prints the format of the left prompt.
-# Use print -P "$(prompt_eddie_lprompt)" to preview.
-prompt_eddie_lprompt() {
+# Use print -P "$(prompt_eddieantonio_lprompt)" to preview.
+prompt_eddieantonio_lprompt() {
     # The prompt char. Feel free to change it.
     local pchar=${1:-❯}
 
@@ -342,7 +347,7 @@ prompt_eddie_lprompt() {
     print -n '%f '
 }
 
-prompt_pure_setup() {
+prompt_eddieantonio_setup() {
     prompt_opts=(subst percent)
 
     zmodload zsh/datetime       # For $EPOCHSECONDS
@@ -367,15 +372,15 @@ prompt_pure_setup() {
     # override the builtin one so that the preprompt is displayed correctly when
     # ^L is issued.
     if [[ $widgets[clear-screen] == 'builtin' ]]; then
-        zle -N clear-screen prompt_eddie_clear_screen
+        zle -N clear-screen prompt_eddieantonio_clear_screen
     fi
 
     # TODO: Show username@host if logged-in through SSH
 
     # Create my prompt.
-    PROMPT="$(prompt_eddie_lprompt)"
+    PROMPT="$(prompt_eddieantonio_lprompt)"
 }
 
-prompt_pure_setup "$@"
+prompt_eddieantonio_setup "$@"
 
 # vim: set ft=zsh:
