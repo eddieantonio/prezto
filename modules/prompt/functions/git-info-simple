@@ -1,0 +1,115 @@
+# Copyright (c) 2017 Eddie Antonio Santos <easantos@ualberta.ca>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Determines if in a git repository, then places info in psvar.
+# Based on git-info by Sorin Ionescu in Prezto.
+function git-info-simple {
+  # Extended globbing is needed to parse repository status.
+  setopt LOCAL_OPTIONS
+  setopt EXTENDED_GLOB
+  setopt WARN_CREATE_GLOBAL
+
+  local branch_idx=1
+  local stashed_idx=2
+  local unmerged_idx=3
+  local untracked_idx=4
+  local unstaged_idx=5
+  local modified_idx=6
+  local added_idx=7
+  local deleted_idx=8
+  local renamed_idx=9
+
+  local branch
+  local stashed=0
+  local untracked=0
+  local unmerged=0
+  local unstaged=0
+  local modified=0
+  local added=0
+  local deleted=0
+  local renamed=0
+
+  # Empty psvar. If psvar is empty, prompts can show nothing.
+  typeset -ga psvar
+  psvar=()
+
+  branch="$(git symbolic-ref --short HEAD 2> /dev/null)"
+
+  # Quit early if not a git repository.
+  if (( $#branch == 0 )); then
+    return 0
+  fi
+
+  psvar[$branch_idx]="$branch"
+
+  # Check if there are any untracked changes at all!
+  if ! git diff-index --quiet HEAD; then
+    psvar[$unstaged_idx]=1
+  fi
+
+  # TODO: support disabling on big repos.
+
+  # Count added, modfied, renamed, deleted, untracked
+  status_cmd="git status --porcelain --ignore-submodules"
+
+  while IFS=$'\n' read line; do
+    # Count added, deleted, modified, renamed, unmerged, untracked, dirty.
+    # T (type change) is undocumented, see http://git.io/FnpMGw.
+    # For a table of scenarii, see http://i.imgur.com/2YLu1.png.
+    [[ "$line" == ([ACDMT][\ MT]|[ACMT]D)\ * ]] && (( added++ ))
+    [[ "$line" == [\ ACMRT]D\ * ]] && (( deleted++ ))
+    [[ "$line" == ?[MT]\ * ]] && (( modified++ ))
+    [[ "$line" == R?\ * ]] && (( renamed++ ))
+    [[ "$line" == (AA|DD|U?|?U)\ * ]] && (( unmerged++ ))
+    [[ "$line" == \?\?\ * ]] && (( untracked++ ))
+  done < <(${(z)status_cmd} 2> /dev/null)
+
+  # Insert value ONLY IF there are more than 0 instances.
+  if (( added > 0 )); then
+    psvar[$added_idx]="$added"
+  fi
+
+  if (( deleted > 0 )); then
+    psvar[$deleted_idx]="$deleted"
+  fi
+
+  if (( modified > 0 )); then
+    psvar[$modified_idx]="$modified"
+  fi
+
+  if (( renamed > 0 )); then
+    psvar[$renamed_idx]="$renamed"
+  fi
+
+  if (( unmerged > 0 )); then
+    psvar[$unmerged_idx]="$unmerged"
+  fi
+
+  if (( untracked > 0 )); then
+    psvar[$untracked_idx]="$untracked"
+  fi
+
+  # Get the number of stashed changesets.
+  stashed=$(( $(git stash list 2> /dev/null | wc -l) + 0))
+  if (( stashed > 0 )); then
+    psvar[$stashed_idx]="$stashed"
+  fi
+}
+
+# vim: set ft=zsh:
