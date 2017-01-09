@@ -41,7 +41,7 @@ function git-info-psvar {
   local unmerged=0
   local unstaged=0
   local modified=0
-  local added=1
+  local added=0
   local deleted=0
   local renamed=0
 
@@ -66,7 +66,7 @@ function git-info-psvar {
   # TODO: support disabling on big repos.
 
   # Count added, modfied, renamed, deleted, untracked
-  status_cmd="git status --porcelain --ignore-submodules"
+  local status_cmd=""
 
   while IFS=$'\n' read line; do
     # Count added, deleted, modified, renamed, unmerged, untracked, dirty.
@@ -78,7 +78,7 @@ function git-info-psvar {
     [[ "$line" == R?\ * ]] && (( renamed++ ))
     [[ "$line" == (AA|DD|U?|?U)\ * ]] && (( unmerged++ ))
     [[ "$line" == \?\?\ * ]] && (( untracked++ ))
-  done < <(${(z)status_cmd} 2> /dev/null)
+  done < <(git status --porcelain --ignore-submodules 2> /dev/null)
 
   # Insert value ONLY IF there are more than 0 instances.
   if (( added > 0 )); then
