@@ -247,11 +247,8 @@ prompt_pure_precmd() {
 }
 
 prompt_eddieantonio_precmd() {
-    # Update VCS (git) status and put it in psvar.
-    vcs_info
-    psvar[1]="$vcs_info_msg_0_"
-    psvar[2]="$vcs_info_msg_1_"
-    psvar[3]="$vcs_info_msg_2_"
+    # Update git status and put it in psvar.
+    git-info-psvar
 
     # Set the title.
     prompt_pure_set_title 'expand-prompt' '%~'
@@ -369,15 +366,39 @@ prompt_eddieantonio_lprompt() {
     print -n '%f '
 }
 
-prompt_pure_setup_vcs() {
-    zstyle ':vcs_info:*' enable git
-    zstyle ':vcs_info:*' use-simple true
-    # only export two msg variables from vcs_info
-    zstyle ':vcs_info:*' max-exports 2
-    # vcs_info_msg_0_ = ' %b' (for branch)
-    # vcs_info_msg_1_ = 'x%R' git top level (%R), x-prefix prevents creation of a named path (AUTO_NAME_DIRS)
-    zstyle ':vcs_info:*' formats ' %b ' 'x%R'
-    zstyle ':vcs_info:*' actionformats ' %b|%a' 'x%R'
+prompt_eddieantonio_rprompt() {
+    # added     ● (green)
+    # removed   ● (red)
+    # unstaged  ● (yellow)
+    # untracked ◌ (white)
+    # renamed   ↯ (green)
+    # stashed   ⚑ (white)
+
+    #zstyle ':vcs_info:*' unstagedstr '%F{221}●'
+    # 13:59     | The time, in a very faint colour.
+    print -n '%F{242}%T%f'
+
+    # Set up git prompt
+    print -n '%(1v.'
+    print -n ' '
+
+    # master    | the branch name
+    print -n '%1v'
+
+    # ◌         | plain ◌ if untracked
+    print -n '%(4V. ◌%f.)'
+    # ⚑         | plain ⚑ if stashed
+    print -n '%(2V. ⚑%f.)'
+    # ●         | yellow ● if modifications
+    print -n '%(6V. %F{yellow}●%f.)'
+    # ●         | green ● if additions
+    print -n '%(7V. %F{green}●%f.)'
+    # ●         | red ● if deletions
+    print -n '%(8V. %F{red}●%f.)'
+    # ↯         | green ↯ if renamed
+    print -n '%(9V. %F{green}↯%f.)'
+
+    print -n '.)'
 }
 
 prompt_eddieantonio_setup() {
@@ -392,26 +413,6 @@ prompt_eddieantonio_setup() {
     #add-zsh-hook precmd prompt_pure_precmd
     add-zsh-hook preexec prompt_eddieantonio_preexec
 
-    zstyle ':vcs_info:*' enable git
-    #zstyle ':vcs_info:*' use-simple true
-    # only export one msg variable from vcs_info
-    zstyle ':vcs_info:*' max-exports 2
-
-    # From:
-    # http://zsh.sourceforge.net/Doc/Release/User-Contributions.html#Configuration-3
-    #
-    # %b (for branch)
-
-    # Used in the default case.
-    zstyle ':vcs_info:*' formats ' %b' '%c' '%u'
-    # Used in rebases or merge conflicts
-    zstyle ':vcs_info:*' actionformats ' %b' '%c' '%u'
-
-    # Only check for staged changes (other version is SLOW)
-    zstyle ':vcs_info:*' stagedstr '1'
-    #zstyle ':vcs_info:*' unstagedstr '%F{221}●'
-    zstyle ':vcs_info:*' check-for-staged-changes true
-
     # if the user has not registered a custom zle widget for clear-screen,
     # override the builtin one so that the preprompt is displayed correctly when
     # ^L is issued.
@@ -419,19 +420,11 @@ prompt_eddieantonio_setup() {
         zle -N clear-screen prompt_eddieantonio_clear_screen
     fi
 
-    # TODO: Incorporate these shapes?
-    # added     ● (green)
-    # removed   ● (red)
-    # unstaged  ● (yellow)
-    # untracked ◌ (white)
-    # renamed   ↯ (green)
-    # stashed   ⚑ (white)
-
     # TODO: Show username@host if logged-in through SSH
 
     # Create my prompt.
     PROMPT="$(prompt_eddieantonio_lprompt ❯)"
-    RPROMPT='%F{242}%T%f%1v%(2V. %F{28}●%f.)'
+    RPROMPT="$(prompt_eddieantonio_rprompt)"
 }
 
 prompt_eddieantonio_setup "$@"
