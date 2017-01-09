@@ -18,8 +18,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Determines if in a git repository, then places info in psvar.
-# Based on git-info by Sorin Ionescu in Prezto.
-function git-info-simple {
+# Uses portions from git-info by Sorin Ionescu in Prezto.
+function git-info-psvar {
   # Extended globbing is needed to parse repository status.
   setopt LOCAL_OPTIONS
   setopt EXTENDED_GLOB
@@ -41,11 +41,11 @@ function git-info-simple {
   local unmerged=0
   local unstaged=0
   local modified=0
-  local added=0
+  local added=1
   local deleted=0
   local renamed=0
 
-  # Empty psvar. If psvar is empty, prompts can show nothing.
+  # Empty psvar. If psvar is empty, then we're not in a git repo.
   typeset -ga psvar
   psvar=()
 
