@@ -58,11 +58,6 @@ function git-info-psvar {
 
   psvar[$branch_idx]="$branch"
 
-  # Check if there are any untracked changes at all!
-  if ! git diff-index --quiet HEAD; then
-    psvar[$unstaged_idx]=1
-  fi
-
   # TODO: support disabling on big repos.
 
   # Count added, modfied, renamed, deleted, untracked
