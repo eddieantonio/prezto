@@ -47,6 +47,10 @@ function j {
   }
 }
 
+# Respect symlinks
+# https://github.com/wting/autojump/issues/124
+export AUTOJUMP_KEEP_SYMLINKS=1
+
 ##
 # Pyenv
 ##
@@ -122,12 +126,6 @@ bindkey '^Z' fancy-ctrl-z
 ##
 # Allow comments even in interactive shells.
 setopt INTERACTIVE_COMMENTS
-# Print a warning message when a global parameter is created in a function
-# by an assignment.
-setopt NO_WARN_CREATE_GLOBAL
-# Disabled, because a lot of scripts create globals!
-# On an ambiguous completion, instead of listing possibilities  or beeping,
+# On an ambiguous completion, instead of listing possibilities or beeping,
 # insert the first match immediately.
 setopt MENU_COMPLETE
-
-# http://superuser.com/a/380667
