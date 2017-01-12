@@ -23,6 +23,7 @@
 #  116 - DarkSlateGrey
 #  120 - LightGreen
 #  124 - Red3
+#  200 - Magenta2
 #  221 - LightGoldenrod2
 
 
@@ -115,10 +116,11 @@ prompt_eddieantonio_rprompt() {
     print -n '%(1v.'
     print -n ' '
 
-    # TODO: merge conflict indicator. Colour:  merge_conflict  200
+    #           | Changes branch name colour on merge conflict.
+    print -n '%(3V.%F{200}.)'
 
     # master    | the branch name
-    print -n '%1v'
+    print -n '%1v%f'
 
     # ●         | red ● if deletions
     print -n '%(8V. %F{red}●%f.)'
