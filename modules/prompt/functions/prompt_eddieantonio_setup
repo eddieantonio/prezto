@@ -26,23 +26,6 @@
 #  221 - LightGoldenrod2
 
 
-# In iTerm2, clears the scrollback buffer on ctrl+L
-prompt_eddieantonio_clear_screen() {
-    local escape_sequence
-
-    # When in iTerm2...
-    # https://www.iterm2.com/documentation-escape-codes.html
-    if ((${+ITERM_SESSION_ID})); then
-        escape_sequence='\e]1337;ClearScrollback\007'
-    else
-        # clear screen and move cursor to (0, 0)
-        escape_sequence='\e[2J\e[0;0H'
-    fi
-
-    # enable output to terminal
-    zle -I
-    print -n "$escape_sequence"
-}
 
 prompt_pure_set_title() {
     # emacs terminal does not support settings the title
@@ -160,14 +143,6 @@ prompt_eddieantonio_setup() {
 
     add-zsh-hook precmd prompt_eddieantonio_precmd
     add-zsh-hook preexec prompt_eddieantonio_preexec
-
-    # if the user has not registered a custom zle widget for clear-screen,
-    # override the builtin one so that the preprompt is displayed correctly when
-    # ^L is issued.
-    if [[ $widgets[clear-screen] == 'builtin' ]]; then
-        # TODO: Move this to my .zshrc or something.
-        zle -N clear-screen prompt_eddieantonio_clear_screen
-    fi
 
     # Create my prompt.
     PROMPT="$(prompt_eddieantonio_lprompt ❯)"
