@@ -137,18 +137,18 @@ prompt_eddieantonio_rprompt() {
     # master    | the branch name
     print -n '%1v'
 
-    # ◌         | plain ◌ if untracked
-    print -n '%(4V. ◌%f.)'
-    # ⚑         | plain ⚑ if stashed
-    print -n '%(2V. ⚑%f.)'
+    # ●         | red ● if deletions
+    print -n '%(8V. %F{red}●%f.)'
     # ●         | yellow ● if modifications
     print -n '%(6V. %F{yellow}●%f.)'
     # ●         | green ● if additions
     print -n '%(7V. %F{green}●%f.)'
-    # ●         | red ● if deletions
-    print -n '%(8V. %F{red}●%f.)'
     # ↯         | green ↯ if renamed
     print -n '%(9V. %F{green}↯%f.)'
+    # ◌         | plain ◌ if untracked
+    print -n '%(4V. ◌%f.)'
+    # ⚑         | plain ⚑ if stashed
+    print -n '%(2V. ⚑%f.)'
 
     print -n '.)'
 }
