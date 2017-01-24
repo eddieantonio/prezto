@@ -73,7 +73,8 @@ prompt_eddieantonio_lprompt() {
     local success_colour=74
     local error_colour=124
 
-    # TODO: Show username@host if logged-in through SSH
+    # easantos@deepdish Show username@host if logged-in through SSH
+    [[ -n $SSH_CONNECTION ]] && print -n '%F{green}%n@%m%f '
 
     # ~         | current working dir, with ~ substitution
     print -n '%F{'$directory_colour'}%1~%f'
