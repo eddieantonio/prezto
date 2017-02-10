@@ -30,7 +30,7 @@ fi
 # TODO: source-this-extra?
 # extra machine-specific stuff...
 if [ -e ~/.source-this-extra.sh ] ; then
-    source ~/.source-this-extra.sh
+  source ~/.source-this-extra.sh
 fi
 
 
@@ -54,7 +54,7 @@ export AUTOJUMP_KEEP_SYMLINKS=1
 ##
 # Pyenv
 ##
-# TODO: Add a path shim for this.
+# TODO: pyenv-virtualenv.
 # Lazy load: https://kev.inburke.com/kevin/profiling-zsh-startup-time/
 pyenv() {
   #Essentially on the first invocation, these functions source the actual
@@ -64,16 +64,6 @@ pyenv() {
   pyenv "$@"
 }
 
-
-##
-# NVM
-##
-# TODO: Add a path shim for this... If I can?
-nvm() {
-  export NVM_DIR="$HOME/.nvm"
-  source "/usr/local/opt/nvm/nvm.sh"
-  nvm "$@"
-}
 
 ##
 # Travis-CI Gem
@@ -137,23 +127,27 @@ setopt MENU_COMPLETE
 ##
 
 # In iTerm2, clears the scrollback buffer on ctrl+L
-iterm2_clear_screen() {
-    local escape_sequence
-
-    # When in iTerm2...
-    # https://www.iterm2.com/documentation-escape-codes.html
-    if ((${+ITERM_SESSION_ID})); then
-        escape_sequence='\e]1337;ClearScrollback\007'
-    else
-        # clear screen and move cursor to (0, 0)
-        escape_sequence='\e[2J\e[0;0H'
-    fi
-
-    # enable output to terminal
-    zle -I
-    print -n "$escape_sequence"
-}
-
 if [[ $widgets[clear-screen] == 'builtin' ]]; then
-    zle -N clear-screen iterm2_clear_screen
+  iterm2_clear_screen() {
+      local escape_sequence
+
+      # When in iTerm2...
+      # https://www.iterm2.com/documentation-escape-codes.html
+      if ((${+ITERM_SESSION_ID})); then
+          escape_sequence='\e]1337;ClearScrollback\007'
+      else
+          # clear screen and move cursor to (0, 0)
+          escape_sequence='\e[2J\e[0;0H'
+      fi
+
+      # enable output to terminal
+      zle -I
+      print -n "$escape_sequence"
+  }
+
+  zle -N clear-screen iterm2_clear_screen
 fi
+
+##
+# Erlang stuff.
+#typeset -T ERL_LIBS erl_libs :
