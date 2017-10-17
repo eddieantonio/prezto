@@ -46,6 +46,8 @@ function j {
   }
 }
 
+# TODO: an autoload for j, jo, etc.
+
 # Respect symlinks
 # https://github.com/wting/autojump/issues/124
 export AUTOJUMP_KEEP_SYMLINKS=1
@@ -87,6 +89,7 @@ travis() {
 
 # iTerm2 shell integration...
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
+unalias imgcat
 
 ##
 # Fancy Ctrl-Z
@@ -121,6 +124,8 @@ setopt INTERACTIVE_COMMENTS
 # On an ambiguous completion, instead of listing possibilities or beeping,
 # insert the first match immediately.
 setopt MENU_COMPLETE
+# Default zsh style: show an inverse-bold '%' for an incomplete line.
+setopt PROMPT_CR PROMPT_SP
 
 ##
 # Miscellaneous weirdness.
