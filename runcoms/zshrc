@@ -156,3 +156,13 @@ fi
 ##
 # Erlang stuff.
 #typeset -T ERL_LIBS erl_libs :
+#
+
+autoload _exercism
+compdef '_exercism' exercism
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export GTHOME=/Users/eddieantonio/Projects/giella
+export GTCORE=$GTHOME/giella-core
+export GTLANG_crk=/Users/eddieantonio/Projects/giella/langs/crk
