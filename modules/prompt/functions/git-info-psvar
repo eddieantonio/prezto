@@ -29,21 +29,21 @@ function git-info-psvar {
   local stashed_idx=2
   local unmerged_idx=3
   local untracked_idx=4
-  local unstaged_idx=5
+  # unstaged index is never used.
   local modified_idx=6
   local added_idx=7
   local deleted_idx=8
   local renamed_idx=9
 
   local branch
-  local stashed=0
-  local untracked=0
-  local unmerged=0
-  local unstaged=0
-  local modified=0
-  local added=0
-  local deleted=0
-  local renamed=0
+  local -i stashed=0
+  local -i untracked=0
+  local -i unmerged=0
+  local -i unstaged=0
+  local -i modified=0
+  local -i added=0
+  local -i deleted=0
+  local -i renamed=0
 
   # Empty psvar. If psvar is empty, then we're not in a git repo.
   typeset -ga psvar
@@ -61,6 +61,7 @@ function git-info-psvar {
   # TODO: support disabling on big repos.
 
   # Count added, modfied, renamed, deleted, untracked
+  local line
   local status_cmd=""
 
   while IFS=$'\n' read line; do
