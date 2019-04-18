@@ -165,3 +165,14 @@ compdef '_exercism' exercism
 export GTHOME=/Users/eddieantonio/Projects/giella
 export GTCORE=$GTHOME/giella-core
 export GTLANG_crk=/Users/eddieantonio/Projects/giella/langs/crk
+
+# added by travis gem
+[ -f /Users/santoseadmin/.travis/travis.sh ] && source /Users/santoseadmin/.travis/travis.sh
+
+# brew ruby, with a user install thing.
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+export GEM_HOME=$HOME/.gem/ruby/2.6.0
+export PATH=$GEM_HOME/bin:$PATH
+
+# lmlayer-cli
+export LMPATH=$HOME/Work/lexical-models/release
