@@ -27,12 +27,6 @@ if [ -f "$HOME/.aliases" ]; then
   source "$HOME/.aliases"
 fi
 
-# TODO: source-this-extra?
-# extra machine-specific stuff...
-if [ -e ~/.source-this-extra.sh ] ; then
-  source ~/.source-this-extra.sh
-fi
-
 
 ##
 # Autojump
@@ -151,27 +145,23 @@ if [[ $widgets[clear-screen] == 'builtin' ]]; then
 fi
 
 ##
-# Erlang stuff.
+# Erlang.
 ##
-manpath+=(
-  /usr/local/opt/erlang/lib/erlang/man
-)
-#
+if [ -d /usr/local/opt/erlang/lib/erlang/man ]; then
+  manpath+=(
+    /usr/local/opt/erlang/lib/erlang/man
+  )
+  export MANPATH
+fi
 
 autoload _exercism
 compdef '_exercism' exercism
 
+# fzf (fuzzy finder)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Giella
-export GTHOME=/Users/eddieantonio/Projects/giella
-export GTCORE=$GTHOME/giella-core
-export GTLANG_crk=/Users/eddieantonio/Projects/giella/langs/crk
-
-# brew ruby, with a user install thing.
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-export GEM_HOME=$HOME/.gem/ruby/2.6.0
-export PATH=$GEM_HOME/bin:$PATH
-
-# lmlayer-cli
-export LMPATH=$HOME/Work/lexical-models/release
+# source-this-extra — machine-specific things.
+# extra machine-specific stuff...
+if [ -e ~/.source-this-extra.sh ] ; then
+  source ~/.source-this-extra.sh
+fi
