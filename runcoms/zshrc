@@ -79,7 +79,7 @@ travis() {
 if [ -e ${HOME}/.iterm2_shell_integration.zsh ]; then
   source ${HOME}/.iterm2_shell_integration.zsh;
   # Use my version of imgcat(1).
-  alias imgcat && unalias imgcat
+  alias imgcat >/dev/null && unalias imgcat
 fi
 
 ##
