@@ -56,6 +56,10 @@ if [ -d "$HOME/.pyenv/shims" ] ; then
   )
 fi
 
+if [ -d "$HOME/.cargo/bin" ] ; then
+  path+=( "$HOME/.cargo/bin" )
+fi
+
 #
 # Less
 #
