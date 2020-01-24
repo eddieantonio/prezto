@@ -35,7 +35,7 @@ fi
 #
 
 # Ensure path arrays do not contain duplicates.
-typeset -gU cdpath fpath mailpath path
+typeset -gU cdpath fpath mailpath path manpath
 
 # Set the list of directories that cd searches.
 # cdpath=(
@@ -53,6 +53,15 @@ if [ -d "$HOME/.pyenv/shims" ] ; then
   path=(
     "$HOME/.pyenv/shims"
     $path
+  )
+fi
+
+##
+# Erlang.
+##
+if [ -d /usr/local/opt/erlang/lib/erlang/man ]; then
+  manpath+=(
+    /usr/local/opt/erlang/lib/erlang/man
   )
 fi
 

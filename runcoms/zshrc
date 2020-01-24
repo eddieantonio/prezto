@@ -144,15 +144,6 @@ if [[ $widgets[clear-screen] == 'builtin' ]]; then
   zle -N clear-screen iterm2_clear_screen
 fi
 
-##
-# Erlang.
-##
-if [ -d /usr/local/opt/erlang/lib/erlang/man ]; then
-  manpath+=(
-    /usr/local/opt/erlang/lib/erlang/man
-  )
-  export MANPATH
-fi
 
 autoload _exercism
 compdef '_exercism' exercism
