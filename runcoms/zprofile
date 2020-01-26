@@ -70,6 +70,13 @@ if [ -d /usr/local/opt/erlang/lib/erlang/man ]; then
   )
 fi
 
+##
+# Cargo (Rust)
+##
+if [ -d "$HOME/.cargo/bin" ] ; then
+  path+=( "$HOME/.cargo/bin" )
+fi
+
 #
 # Less
 #
