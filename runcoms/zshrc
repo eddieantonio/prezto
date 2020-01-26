@@ -48,19 +48,6 @@ export AUTOJUMP_KEEP_SYMLINKS=1
 
 
 ##
-# Pyenv
-##
-# Lazy load: https://kev.inburke.com/kevin/profiling-zsh-startup-time/
-pyenv() {
-  #Essentially on the first invocation, these functions source the actual
-  #definition and then immediately call it with the arguments passed in.
-  eval "$( command pyenv init - )"
-  # eval "$(pyenv virtualenv-init -)"
-  pyenv "$@"
-}
-
-
-##
 # Travis-CI Gem
 ##
 # Lazy-load it.
@@ -144,9 +131,6 @@ if [[ $widgets[clear-screen] == 'builtin' ]]; then
   zle -N clear-screen iterm2_clear_screen
 fi
 
-
-autoload _exercism
-compdef '_exercism' exercism
 
 # fzf (fuzzy finder)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

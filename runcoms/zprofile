@@ -48,12 +48,17 @@ path=(
   $path
 )
 
-# Prepend Pyenv's shims, if it exists!
+# PREPEND pyenv's shims, if it exists!
 if [ -d "$HOME/.pyenv/shims" ] ; then
   path=(
     "$HOME/.pyenv/shims"
     $path
   )
+fi
+
+# append ~/.local/bin (pip likes to put things here)
+if [ -d "$HOME/.local/bin" ] ; then
+  path+=("$HOME/.local/bin")
 fi
 
 ##
