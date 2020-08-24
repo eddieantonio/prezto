@@ -31,20 +31,27 @@ fi
 ##
 # Autojump
 ##
-# Lazy load: https://kev.inburke.com/kevin/profiling-zsh-startup-time/
+# DEPRECATED: use z.lua instead:
 function j {
-  (( $+commands[brew] )) && {
-    local pfx=$(brew --prefix)
-    [[ -f "$pfx/etc/autojump.sh" ]] && . "$pfx/etc/autojump.sh"
-    j "$@"
-  }
+  echo "$(tput setaf 3)please use z instead$(tput sgr0)"
+  return 2
+}
+function jo {
+  echo "$(tput setaf 3)please use zo instead$(tput sgr0)"
+  return 2
 }
 
-# TODO: an autoload for jo, etc.
 
-# Respect symlinks
-# https://github.com/wting/autojump/issues/124
-export AUTOJUMP_KEEP_SYMLINKS=1
+##
+# z.lua
+##
+# https://github.com/skywind3000/z.lua
+if [ -e /usr/local/share/z.lua ]; then
+  eval "$(lua /usr/local/share/z.lua/z.lua --init zsh enhanced fzf)"
+  function zo {
+    open "$(z -e $1)"
+  }
+fi
 
 
 ##
